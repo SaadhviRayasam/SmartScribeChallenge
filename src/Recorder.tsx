@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
+//import VolumeIndicator from "react-volume-indicator";
 import { UploadManager, UploadResult } from "./UploadManager";
+import "./Recorder.css";
 
 interface RecordingProps {
   onDownloadRecording: () => void;
@@ -25,6 +27,8 @@ const RecordingComponent: React.FC<RecordingProps> = ({
   const [uploadStatus, setUploadStatus] = useState<String>();
   const [uploadSize, setUploadSize] = useState<number>();
   const [isUploading, setIsUploading] = useState<boolean>(false);
+
+  const [volume, setVolume] = useState(0);
 
   const handleStartRecording = () => {
     if (!mediaRecorder.current) return;
@@ -87,6 +91,33 @@ const RecordingComponent: React.FC<RecordingProps> = ({
         mediaRecorder.current.ondataavailable = (event) => {
           setAudioChunks((currentChunks) => [...currentChunks, event.data]);
         };
+
+    const audioContext = new AudioContext();
+    const analyser = audioContext.createAnalyser();
+    const microphone = audioContext.createMediaStreamSource(stream);
+    const scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1);
+
+    microphone.connect(analyser);
+    analyser.connect(scriptProcessor);
+    scriptProcessor.connect(audioContext.destination);
+
+    scriptProcessor.onaudioprocess = function() {
+      const array = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(array);
+      const arraySum = array.reduce((a, value) => a + value, 0);
+      const level = arraySum / array.length;
+      setVolume(level > 10? 9: level);
+      //console.log(Math.round(average));
+      // colorPids(average);
+    };
+
+    //const interval = setInterval(updateVolume, 100);
+
+    /*return () => {
+      clearInterval(interval);
+    };*/
+
+
       } catch (err) {
         console.error("Failed to get user media", err);
       }
@@ -105,6 +136,7 @@ const RecordingComponent: React.FC<RecordingProps> = ({
       setAudioUrl(url);
     }
   }, [audioChunks, isRecording]);
+
 
   return (
     <div
@@ -136,6 +168,14 @@ const RecordingComponent: React.FC<RecordingProps> = ({
       recordingName==="" && recordBegin &&
       <div>Name your recoding to start!</div>
      }
+
+    {isRecording &&
+    <div className="wrapper">
+      <span style={{ height: `${volume*10*Math.random()}%` }}></span>
+      <span style={{ height: `${volume*10}%` }}></span>
+      <span style={{ height: `${volume*10*Math.random()}%` }}></span>
+    </div>
+    }
 
       {isStream && 
       <button 
