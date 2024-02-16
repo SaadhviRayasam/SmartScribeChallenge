@@ -4,9 +4,9 @@
     position: relative;
     text-align: center;
     line-height: 50px;
-  }
-  
-  .wrapper > span {
+}
+
+.wrapper>span {
     display: inline-block;
     width: 5px;
     height: 10%;
@@ -15,4 +15,12 @@
     transition: height 0.05s ease-in-out;
     margin: 0 2px;
     vertical-align: bottom;
-  }
+}
+
+.error {
+    color: red;
+}
+
+.success {
+    color: green;
+}
