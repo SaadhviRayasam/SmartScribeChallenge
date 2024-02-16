@@ -29,7 +29,7 @@ The task was to build and improve upon a React component that allows users to re
 - When the upload is successful, the success message, along with the size of the transcript in bytes (in green), is shown. Again, the `uploadStatus` state stores the transcript of the audio file.
 
 **BONUS : Stage IV : Indicate Microphone Input Volume**: 
--Five green candle sticks of varying length are shown to indicate that the microphone is working along with the intensity of the volume. The height of the sticks indicate the volume of the audio captured.
+- Five green candle sticks of varying length are shown to indicate that the microphone is working along with the intensity of the volume. The height of the sticks indicate the volume of the audio captured.
 - This can be viewed throughout the recording process, and is implemented using the `volume` state. This state is utilized to calculate the height to be shown.
 
 ## Conclusion and Future Work
