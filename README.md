@@ -1,37 +1,39 @@
 # SmartScribe SWE Intern Code Challenge
 
-Welcome to the SmartScribe Software Engineering Intern Code Challenge! This challenge is designed to give us a glimpse into your problem-solving skills, coding abilities, and creativity. As you work through the stages outlined below, remember that while we do appreciate a touch of flair in UI design, our primary focus is on functionality, code clarity, efficiency, and your ability to follow instructions and implement features.
-
-## Getting Started
-
-1. **Clone this repository**: Start by cloning this repository. We suggest naming your cloned repository in a way that reflects the challenge, such as SmartScribe-Intern-Challenge.
-
-2. **Set up your environment**: Ensure you have a development environment set up for React and TypeScript. You'll need Node.js installed on your computer, and we recommend using an IDE like Visual Studio Code for its excellent TypeScript and React support.
-
-3. **Install dependencies**: Navigate to your project directory in the terminal and run `npm install` to install the necessary dependencies.
-
-4. **Start the development server**: Once dependencies are installed, you can start the development server by running `npm run dev`. This will launch the project in your default web browser.
+Welcome to my implementation of SmartScribe Software Engineering Intern Code Challenge!
 
 ## Objectives
 
-Your task is to build and improve upon a React component that allows users to record audio, name their recordings, download the audio file, and simulate an upload process for transcription. The challenge is divided into stages, each with its own set of requirements. You'll find the specific instructions in the `INSTRUCTIONS.md` file in the repo.
+The task was to build and improve upon a React component that allows users to record audio, name their recordings, download the audio file, and simulate an upload process for transcription. The challenge is divided into stages, each with its own set of requirements. The specific instructions are in the INSTRUCTIONS.md file in the repo.
 
 - **Stage I**: Focuses on fixing some existing bugs.
 - **Stage II**: Aims at improving the user experience based on given criteria and using browser media APIs.
 - **Stage III**: Involves implementing a new feature related to audio upload and transcription simulation.
 - **BONUS Stage IV**: (Optional) Enhances the application by providing visual feedback on microphone input volume.
 
-## What We're Looking For
+## Methodology and Implementation
 
-- **Problem-solving skills**: Your approach to debugging and making improvements.
-- **Code quality**: Clean, readable, and well-structured code.
-- **Understanding of React and TypeScript**: Effective use of React's features and TypeScript's type system.
-- **Creativity and initiative**: Any additional features or enhancements you decide to implement.
+**Stage I : Fix the problems**:
+- When a user clicks the stop recording button, the time interval is cleared, and progress time is reset using the `clearInterval` function.
+- On downloading the recorded audio, the downloaded status is updated to true by setting the `isDownloaded` const to true.
 
-## Time Consideration
+**Stage II : Improve the UX**:
+- If microphone access is blocked, the user will not be allowed to record. This is implemented using the `isStream` state, which can take boolean values. It is set to true when media access is allowed.
+- When the user attempts to record without providing a name, an error message (in red) is displayed. Only upon naming is recording functionality enabled. The `recordingName` state should be a non-empty string for the `Start Recording` button to be enabled.
+- Once the audio is recorded to the user's satisfaction, it can be downloaded. The downloaded file has the same name as the recording. The `recordingName` is fetched, and the downloaded file is in the format of `recordingName.webm`
 
-We understand that your time is valuable, and this challenge is not meant to take an excessively long time. Aim to spend no more than 2-5 hours on this challenge. It's okay if you don't complete every single requirement within this timeframe; we're more interested in seeing your thought process, coding practices, and how you prioritize tasks when time is limited.
+**Stage III : Implement a new feature**: 
+- The upload button simulates a transcription process whereby the audio is sent to a server, and a transcript is returned. The function takes 5 seconds to run and can either fail or succeed. On click of this button, the `handleUpload` function is triggered.
+- During the 5-second processing time, the button reads `Uploading ...`, indicating that it is in progress. The state `isUploading` which takes boolean values, keeps track of the upload status to display the appropriate name on the button.
+- An error message (in red) is displayed in the event of an upload failure. It prompts the user to try re-uploading. This is implemented using the `uploadStatus` state, which holds String values. By default, it is an empty string and is updated by the `UploadManager.ts` to display the error.
+- When the upload is successful, the success message, along with the size of the transcript in bytes (in green), is shown. Again, the `uploadStatus` state stores the transcript of the audio file.
 
-## Submission
+**BONUS : Stage IV : Indicate Microphone Input Volume**: 
+-Five green candle sticks of varying length are shown to indicate that the microphone is working along with the intensity of the volume. The height of the sticks indicate the volume of the audio captured.
+- This can be viewed throughout the recording process, and is implemented using the `volume` state. This state is utilized to calculate the height to be shown.
 
-Once you have completed the challenge to your satisfaction, please submit your work by pushing your code to a GitHub repository and sharing the link with us. Include a README notes you think might be helpful in understanding your approach and thought-process. If you spent a lot of time going down a path that didn't prove fruitful—that's software development!—include a note in your README.
+## Conclusion and Future Work
+
+It was a lot of fun to play around and implement this challenge! While testing the application, I noticed the following scenario: After downloading (and/or uploading) the recording, the download (and/or upload) status is updated. Next, if the user starts recording again, the download (and/or upload) status will still be visible. This case was also handled by resetting values when recording starts. 
+
+As a future work, I would like to implement a feature where the user can edit/copy-paste the transcript after uploading. This feature would mock the SmartScribe technology to edit and prepare note to copy and paste into the EHR.
