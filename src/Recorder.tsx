@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { UploadManager } from "./UploadManager";
+import { UploadManager, UploadResult } from "./UploadManager";
 
 interface RecordingProps {
   onDownloadRecording: () => void;
@@ -19,6 +19,12 @@ const RecordingComponent: React.FC<RecordingProps> = ({
 
   const [recordBegin, setIsRecordBegin] = useState<boolean>(false);
   const [isStream, setIsStream] = useState<boolean>(false);
+
+  const [audioBlob, setAudioBlob] = useState<Blob>();
+
+  const [uploadStatus, setUploadStatus] = useState<String>();
+  const [uploadSize, setUploadSize] = useState<number>();
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const handleStartRecording = () => {
     if (!mediaRecorder.current) return;
@@ -46,14 +52,20 @@ const RecordingComponent: React.FC<RecordingProps> = ({
   };
 
   const handleUpload = (audioBlob: Blob) => {
+    setIsUploading(true);
     UploadManager.upload(audioBlob)
       .then((response) => {
+        setIsUploading(false);
         console.log(
           `Upload successful. Transcript: ${response.transcript}, Size: ${response.size} bytes`
         );
+        setUploadStatus(response.transcript);
+        setUploadSize(response.size);
       })
       .catch((error) => {
         console.error("Upload failed:", error.message);
+        setUploadStatus(error.message);
+        setUploadSize(0);
       });
   };
 
@@ -85,10 +97,11 @@ const RecordingComponent: React.FC<RecordingProps> = ({
 
   useEffect(() => {
     if (audioChunks.length > 0 && !isRecording) {
-      const audioBlob = new Blob(audioChunks, {
+      const audioB = new Blob(audioChunks, {
         type: "audio/webm;codecs=opus",
       });
-      const url = URL.createObjectURL(audioBlob);
+      setAudioBlob(audioB);
+      const url = URL.createObjectURL(audioB);
       setAudioUrl(url);
     }
   }, [audioChunks, isRecording]);
@@ -170,6 +183,33 @@ const RecordingComponent: React.FC<RecordingProps> = ({
           >
             Download Recording
           </button>
+
+          <button
+            onClick={() => {
+              if(audioBlob)
+              handleUpload(audioBlob); 
+            }}
+            style={{
+              width: "80%",
+              padding: "10px",
+              marginBottom: "20px",
+              borderRadius: "5px",
+              border: "none",
+              backgroundColor: "#28a745",
+              color: "white",
+              cursor: "pointer",
+            }}
+          >
+          {isUploading ? "Uploading" : "Upload Recording"}
+          </button>
+          {
+           uploadStatus &&
+           <div>{uploadStatus}</div>
+          }
+          {
+           uploadSize && 
+           <div>{uploadSize} bytes</div>
+          }
         </div>
       )}
     </div>

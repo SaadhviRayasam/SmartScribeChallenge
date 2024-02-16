@@ -1,4 +1,4 @@
-interface UploadResult {
+export interface UploadResult {
   transcript: string;
   size: number;
 }
